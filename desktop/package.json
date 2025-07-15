@@ -1,0 +1,84 @@
+{
+  "name": "todo-calendar-desktop",
+  "version": "1.0.0",
+  "description": "Desktop version of the Todo Calendar App",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "launcher": "electron launcher.js",
+    "dev": "electron . --dev",
+    "test": "electron test-simple.js",
+    "build": "electron-builder",
+    "build:win": "electron-builder --win",
+    "build:mac": "electron-builder --mac",
+    "build:linux": "electron-builder --linux",
+    "build:exe": "node build.js",
+    "build:simple": "node build-simple.js",
+    "dist": "npm run build && electron-builder --publish=never",
+    "postinstall": "electron-builder install-app-deps"
+  },
+  "keywords": [
+    "todo",
+    "calendar",
+    "desktop",
+    "electron"
+  ],
+  "author": "Todo Calendar App",
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^28.0.0",
+    "electron-builder": "^24.9.1"
+  },
+  "dependencies": {
+    "electron-store": "^8.1.0"
+  },
+  "build": {
+    "appId": "com.todocalendar.app",
+    "productName": "Todo Calendar",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "backend/**/*",
+      "frontend/dist/**/*",
+      "node_modules/**/*",
+      "assets/**/*"
+    ],
+    "extraResources": [
+      {
+        "from": "../backend",
+        "to": "backend",
+        "filter": ["**/*"]
+      },
+      {
+        "from": "../frontend/dist",
+        "to": "frontend/dist",
+        "filter": ["**/*"]
+      }
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "portable",
+          "arch": ["x64"]
+        }
+      ],
+      "sign": false,
+      "signAndEditExecutable": false
+    },
+    "mac": {
+      "target": "dmg"
+    },
+    "linux": {
+      "target": "AppImage"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true
+    }
+  }
+} 

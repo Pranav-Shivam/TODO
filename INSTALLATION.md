@@ -20,22 +20,9 @@ Before installing the Todo Calendar App, make sure you have the following instal
 
 ## Quick Installation
 
-### Option 1: Automatic Setup (Recommended)
+### Option 1: Web Version (Recommended for Development)
 
 1. **Clone or download** the project to your computer
-2. **Install all dependencies**:
-   ```bash
-   npm install
-   npm run install:all
-   ```
-
-### Option 2: Manual Installation
-
-1. **Install root dependencies**:
-   ```bash
-   npm install
-   ```
-
 2. **Install frontend dependencies**:
    ```bash
    cd frontend
@@ -54,6 +41,30 @@ Before installing the Todo Calendar App, make sure you have the following instal
    ```
 
 4. **Install and start CouchDB** (see CouchDB Setup section below)
+
+### Option 2: Desktop Version (Recommended for End Users)
+
+1. **Clone or download** the project to your computer
+2. **Install frontend and backend dependencies** (see Option 1, steps 2-4)
+3. **Install desktop dependencies**:
+   ```bash
+   cd desktop
+   npm install
+   cd ..
+   ```
+
+**Windows Users:**
+```bash
+cd desktop
+setup.bat
+```
+
+**macOS/Linux Users:**
+```bash
+cd desktop
+chmod +x setup.sh
+./setup.sh
+```
 
 ## Virtual Environment
 
@@ -85,9 +96,16 @@ On Windows, you can start CouchDB service through:
 
 ## Running the Application
 
-### Development Mode
-Start both backend and frontend in development mode:
+### Web Version
+
+**Start both backend and frontend:**
 ```bash
+cd backend
+python main.py
+```
+(In another terminal:)
+```bash
+cd frontend
 npm run dev
 ```
 
@@ -95,25 +113,42 @@ This will start:
 - Backend API at: http://localhost:7005
 - Frontend app at: http://localhost:7008
 
-### Individual Services
+### Desktop Version
 
-**Start Backend Only:**
+**Development Mode (Recommended):**
 ```bash
-cd backend
-python main.py
-```
-
-**Start Frontend Only:**
-```bash
-cd frontend
+cd desktop
 npm run dev
 ```
+
+This will:
+- Automatically start the backend
+- Automatically start the frontend dev server
+- Launch the desktop app
+- Open DevTools for debugging
+
+**Production Mode:**
+```bash
+cd desktop
+npm start
+```
+
+This will:
+- Automatically start the backend
+- Load the built frontend
+- Launch the desktop app
 
 ## Usage
 
 ### Accessing the App
-- **Development**: http://localhost:7008
+
+**Web Version:**
+- **Frontend**: http://localhost:7008
 - **API Documentation**: http://localhost:7005/docs
+
+**Desktop Version:**
+- **App**: Launches as a native desktop application
+- **API Documentation**: http://localhost:7005/docs (when backend is running)
 
 ### Features
 
