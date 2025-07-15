@@ -23,13 +23,10 @@ Before installing the Todo Calendar App, make sure you have the following instal
 ### Option 1: Automatic Setup (Recommended)
 
 1. **Clone or download** the project to your computer
-2. **Run the master setup script**:
+2. **Install all dependencies**:
    ```bash
-   setup.bat
-   ```
-3. **Install CouchDB**:
-   ```powershell
-   powershell -ExecutionPolicy Bypass -File system\setup_couchdb.ps1
+   npm install
+   npm run install:all
    ```
 
 ### Option 2: Manual Installation
@@ -68,30 +65,23 @@ cd backend
 call venv\Scripts\activate
 ```
 
-Or use the provided script:
-```bash
-cd backend
-activate_venv.bat
-```
-
 ### Working with the Virtual Environment
 - All Python dependencies are installed in the virtual environment
-- The system tray app automatically uses the virtual environment
 - To deactivate: type `deactivate` in the terminal
 
 ## CouchDB Setup
-
-### Automatic Setup
-Run the CouchDB setup script:
-```powershell
-powershell -ExecutionPolicy Bypass -File system\setup_couchdb.ps1
-```
 
 ### Manual Setup
 1. Download CouchDB from https://couchdb.apache.org/#download
 2. Install with default settings
 3. Verify it's running at http://localhost:5984
 4. No additional configuration needed - the app will create the database automatically
+
+### Starting CouchDB Service
+On Windows, you can start CouchDB service through:
+1. Windows Services (services.msc)
+2. Look for "Apache CouchDB" service
+3. Start the service if it's not running
 
 ## Running the Application
 
@@ -105,43 +95,25 @@ This will start:
 - Backend API at: http://localhost:7005
 - Frontend app at: http://localhost:7008
 
-### System Tray Mode (Auto-startup)
-Run as a background system tray application:
+### Individual Services
 
-**Option 1 - Using helper script (easiest):**
-```bash
-run_system_tray.bat
-```
-
-**Option 2 - Manual:**
+**Start Backend Only:**
 ```bash
 cd backend
-python system_tray.py
+python main.py
 ```
 
-**Note**: The `system_tray.py` file is located in the `backend` directory, not the `system` directory.
-
-## Auto-Startup Configuration
-
-To make the app start automatically with Windows:
-
-1. **Run the startup configuration script**:
-   ```bash
-   system\setup_startup.bat
-   ```
-
-2. **Choose option 1** to add to Windows startup
-
-3. **Alternatively**, use the command line:
-   ```bash
-   python backend\system_tray.py --add-startup
-   ```
+**Start Frontend Only:**
+```bash
+cd frontend
+npm run dev
+```
 
 ## Usage
 
 ### Accessing the App
 - **Development**: http://localhost:7008
-- **System Tray**: Right-click the calendar icon and select "Open Todo App"
+- **API Documentation**: http://localhost:7005/docs
 
 ### Features
 
@@ -161,33 +133,27 @@ To make the app start automatically with Windows:
 - Data persists across app restarts and system reboots
 - No manual saving required
 
-### System Tray Functions
-- **Open App**: Launch the web interface
-- **Start/Stop Services**: Control backend and frontend
-- **Status**: Check if services are running
-- **Quit**: Stop all services and exit
-
 ## Troubleshooting
 
 ### Common Issues
 
 #### "Cannot connect to backend"
 1. Check if backend is running on port 7005
-2. Restart the backend: `npm run dev:backend`
+2. Restart the backend: `cd backend && python main.py`
 3. Check CouchDB is running at http://localhost:5984
 
 #### "CouchDB connection failed"
 1. Ensure CouchDB service is started
-2. Run: `powershell -File system\setup_couchdb.ps1`
-3. Manually start Apache CouchDB service in Windows Services
+2. Manually start Apache CouchDB service in Windows Services
+3. Verify CouchDB is accessible at http://localhost:5984
 
 #### "Frontend not loading"
 1. Check if frontend is running on port 7008
-2. Restart the frontend: `npm run dev:frontend`
+2. Restart the frontend: `cd frontend && npm run dev`
 3. Clear browser cache and reload
 
 #### "Dependencies not found"
-1. Re-run the setup: `setup.bat`
+1. Re-run the installation: `npm install && npm run install:all`
 2. Check Node.js and Python are in your PATH
 3. Ensure virtual environment is activated: `cd backend && call venv\Scripts\activate`
 4. Try installing dependencies manually in the virtual environment
@@ -201,20 +167,13 @@ If you need to change default ports:
 ### Logs and Debugging
 - **Backend logs**: Check terminal where backend is running
 - **Frontend logs**: Check browser console (F12)
-- **System tray logs**: Check terminal where system_tray.py is running
 
 ## Uninstalling
 
-### Remove from Startup
-```bash
-python backend\system_tray.py --remove-startup
-```
-
 ### Remove Application
-1. Remove from Windows startup (if configured)
-2. Stop any running services
-3. Delete the application folder
-4. Optionally uninstall CouchDB
+1. Stop any running services
+2. Delete the application folder
+3. Optionally uninstall CouchDB
 
 ## Support
 
