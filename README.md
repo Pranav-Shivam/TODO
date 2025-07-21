@@ -72,9 +72,13 @@ npm run dev
 
 ### URLs
 
-- Frontend: http://localhost:7008
-- Backend API: http://localhost:7005
-- API Documentation: http://localhost:7005/docs
+- Frontend: http://localhost:7038
+- Backend API: http://localhost:7035
+- API Documentation: http://localhost:7035/docs
+
+### Configuration
+
+The application uses environment variables for configuration. See [CONFIGURATION.md](CONFIGURATION.md) for details on available options.
 
 ## 📱 Usage
 

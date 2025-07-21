@@ -1,17 +1,24 @@
 import couchdb
 import uuid
+import os
 from datetime import datetime
 from typing import List, Optional, Dict, Any
 from models.task import Task, TaskCreate, TaskUpdate, TaskStatus
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
 
 class CouchDBClient:
     def __init__(self):
-        username: str = "root"
-        password: str = "root"
-        server_url: str = f"http://{username}:{password}@localhost:5984"
+        username: str = os.getenv("COUCHDB_USERNAME", "root")
+        password: str = os.getenv("COUCHDB_PASSWORD", "root")
+        host: str = os.getenv("COUCHDB_HOST", "localhost")
+        port: str = os.getenv("COUCHDB_PORT", "5984")
+        server_url: str = f"http://{username}:{password}@{host}:{port}"
 
         self.server = couchdb.Server(server_url)
-        self.db_name = "todo_tasks"
+        self.db_name = os.getenv("COUCHDB_DATABASE", "todo_tasks")
         self.db = self._get_or_create_database()
         self._create_views()
 

@@ -3,6 +3,11 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from routes.tasks import router as tasks_router
 import uvicorn
+import os
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
 
 # Create FastAPI app
 app = FastAPI(
@@ -12,9 +17,10 @@ app = FastAPI(
 )
 
 # Configure CORS
+cors_origins = os.getenv("CORS_ALLOWED_ORIGINS", "http://localhost:7038,http://127.0.0.1:7038,http://localhost:7039,http://127.0.0.1:7039").split(",")
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:7008", "http://127.0.0.1:7008", "http://localhost:5173", "http://127.0.0.1:5173", "http://localhost:5174", "http://127.0.0.1:5174", "http://localhost:7009", "http://127.0.0.1:7009"],  # Vite dev server
+    allow_origins=cors_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -43,9 +49,10 @@ async def health_check():
         )
 
 if __name__ == "__main__":
+    port = int(os.getenv("BACKEND_PORT", 7035))
     uvicorn.run(
         "main:app",
         host="0.0.0.0",
-        port=7005,
+        port=port,
         reload=True
     ) 

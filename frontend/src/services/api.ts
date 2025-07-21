@@ -1,7 +1,8 @@
 import axios from 'axios';
 import { Task, TaskCreate, TaskUpdate, TaskStatus } from '../types/task';
+import { config } from '../config/env';
 
-const API_BASE_URL = 'http://localhost:7005';
+const API_BASE_URL = config.API_BASE_URL;
 
 const api = axios.create({
   baseURL: API_BASE_URL,
