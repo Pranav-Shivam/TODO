@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { Calendar, momentLocalizer, Views } from 'react-big-calendar';
 import moment from 'moment';
 import { Task, TaskStatus } from '../types/task';
@@ -14,6 +14,7 @@ interface CalendarViewProps {
   onSoftDeleteTask: (taskId: string) => void;
   onPermanentDeleteTask: (taskId: string) => void;
   onSelectDate: (date: Date) => void;
+  onViewAllTasks: () => void;
 }
 
 interface CalendarEvent {
@@ -90,9 +91,15 @@ const CalendarView = ({
   onEditTask,
   onSoftDeleteTask,
   onPermanentDeleteTask,
-  onSelectDate
+  onSelectDate,
+  onViewAllTasks
 }: CalendarViewProps) => {
   const [deleteConfirmationTask, setDeleteConfirmationTask] = useState<Task | null>(null);
+
+  // Ensure we load all tasks when calendar view is accessed
+  useEffect(() => {
+    onViewAllTasks();
+  }, [onViewAllTasks]);
 
   const events: CalendarEvent[] = useMemo(() => {
     return tasks

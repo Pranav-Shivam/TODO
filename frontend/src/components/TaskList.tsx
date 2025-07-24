@@ -10,6 +10,7 @@ interface TaskListProps {
   onPermanentDeleteTask: (taskId: string) => void;
   onStatusChange: (taskId: string, status: TaskStatus) => void;
   selectedDate: Date;
+  dateFilterEnabled: boolean;
 }
 
 interface DeleteConfirmationProps {
@@ -78,11 +79,19 @@ const TaskList = ({
   onSoftDeleteTask,
   onPermanentDeleteTask,
   onStatusChange,
-  selectedDate
+  selectedDate,
+  dateFilterEnabled
 }: TaskListProps) => {
   const [deleteConfirmationTask, setDeleteConfirmationTask] = useState<Task | null>(null);
 
   const filteredTasks = useMemo(() => {
+    // If date filtering is enabled, tasks are already filtered by backend
+    // If not, we need to filter client-side (for calendar view showing all tasks)
+    if (dateFilterEnabled) {
+      return tasks; // Backend already filtered by date
+    }
+    
+    // Client-side filtering for calendar view
     return tasks.filter(task => {
       if (!task.due_date) return true;
       try {
@@ -92,7 +101,7 @@ const TaskList = ({
         return true;
       }
     });
-  }, [tasks, selectedDate]);
+  }, [tasks, selectedDate, dateFilterEnabled]);
 
   const getStatusIcon = (status: TaskStatus) => {
     switch (status) {
@@ -162,12 +171,25 @@ const TaskList = ({
       <div className="flex-1 p-6">
         <div className="max-w-4xl mx-auto">
           <div className="mb-6">
-            <h2 className="text-2xl font-bold text-gray-900">
-              Tasks for {format(selectedDate, 'MMMM d, yyyy')}
-            </h2>
-            <p className="text-gray-600 mt-1">
-              {filteredTasks.length} task{filteredTasks.length !== 1 ? 's' : ''} found
-            </p>
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-2xl font-bold text-gray-900">
+                  {dateFilterEnabled 
+                    ? `Tasks for ${format(selectedDate, 'MMMM d, yyyy')}`
+                    : `All Tasks (${format(selectedDate, 'MMMM d, yyyy')})`
+                  }
+                </h2>
+                <p className="text-gray-600 mt-1">
+                  {filteredTasks.length} task{filteredTasks.length !== 1 ? 's' : ''} found
+                  {dateFilterEnabled && (
+                    <span className="ml-2 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                      <Calendar className="w-3 h-3 mr-1" />
+                      Date Filtered
+                    </span>
+                  )}
+                </p>
+              </div>
+            </div>
           </div>
 
           <div className="space-y-3">

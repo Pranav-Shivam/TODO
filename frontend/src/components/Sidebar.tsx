@@ -1,7 +1,7 @@
 // React import not needed with new JSX transform
 import { Link, useLocation } from 'react-router-dom';
-import { Calendar, List, Plus, Eye, EyeOff } from 'lucide-react';
-import { format } from 'date-fns';
+import { Calendar, List, Plus, Eye, EyeOff, CalendarDays, X } from 'lucide-react';
+import { format, isToday } from 'date-fns';
 
 interface SidebarProps {
   selectedDate: Date;
@@ -9,12 +9,28 @@ interface SidebarProps {
   onCreateTask: () => void;
   showDeletedTasks: boolean;
   onToggleDeletedTasks: (show: boolean) => void;
+  dateFilterEnabled: boolean;
+  onViewAllTasks: () => void;
 }
 
-const Sidebar = ({ selectedDate, onDateSelect, onCreateTask, showDeletedTasks, onToggleDeletedTasks }: SidebarProps) => {
+const Sidebar = ({ 
+  selectedDate, 
+  onDateSelect, 
+  onCreateTask, 
+  showDeletedTasks, 
+  onToggleDeletedTasks,
+  dateFilterEnabled,
+  onViewAllTasks
+}: SidebarProps) => {
   const location = useLocation();
 
   const isActive = (path: string) => location.pathname === path;
+
+  const handleTodayClick = () => {
+    onDateSelect(new Date());
+  };
+
+  const isTodaySelected = isToday(selectedDate);
 
   return (
     <div className="w-64 bg-white border-r border-gray-200 flex flex-col">
@@ -35,6 +51,32 @@ const Sidebar = ({ selectedDate, onDateSelect, onCreateTask, showDeletedTasks, o
           Create Task
         </button>
       </div>
+
+      {/* Date Filter Status */}
+      {dateFilterEnabled && (
+        <div className="px-4 pb-2">
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <CalendarDays className="w-4 h-4 text-blue-600" />
+                <span className="text-sm font-medium text-blue-900">
+                  Filtered by Date
+                </span>
+              </div>
+              <button
+                onClick={onViewAllTasks}
+                className="text-blue-600 hover:text-blue-800"
+                title="View all tasks"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+            <p className="text-xs text-blue-700 mt-1">
+              Showing tasks for {format(selectedDate, 'MMM d, yyyy')}
+            </p>
+          </div>
+        </div>
+      )}
 
       {/* View Options */}
       <div className="px-4 pb-4">
@@ -64,6 +106,11 @@ const Sidebar = ({ selectedDate, onDateSelect, onCreateTask, showDeletedTasks, o
           >
             <List size={16} />
             Task List
+            {dateFilterEnabled && (
+              <span className="ml-auto bg-blue-100 text-blue-800 text-xs px-2 py-0.5 rounded-full">
+                Filtered
+              </span>
+            )}
           </Link>
           <Link
             to="/calendar"
@@ -72,19 +119,38 @@ const Sidebar = ({ selectedDate, onDateSelect, onCreateTask, showDeletedTasks, o
                 ? 'bg-blue-50 text-blue-700 border border-blue-200'
                 : 'text-gray-700 hover:bg-gray-100'
             }`}
+            onClick={onViewAllTasks}
           >
             <Calendar size={16} />
             Calendar View
+            {!dateFilterEnabled && (
+              <span className="ml-auto bg-green-100 text-green-800 text-xs px-2 py-0.5 rounded-full">
+                All
+              </span>
+            )}
           </Link>
         </div>
       </nav>
 
       {/* Date Picker */}
       <div className="p-4 border-t border-gray-200">
-        <div className="mb-2">
+        <div className="mb-2 flex items-center justify-between">
           <label className="text-sm font-medium text-gray-700">
             Selected Date
           </label>
+          <button
+            onClick={handleTodayClick}
+            disabled={isTodaySelected}
+            className={`flex items-center gap-1 px-3 py-1 rounded-md text-xs font-medium transition-colors ${
+              isTodaySelected
+                ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                : 'bg-blue-50 text-blue-700 hover:bg-blue-100 hover:text-blue-800'
+            }`}
+            title={isTodaySelected ? "Already viewing today" : "Go to today"}
+          >
+            <CalendarDays size={12} />
+            Today
+          </button>
         </div>
         <input
           type="date"
@@ -94,6 +160,11 @@ const Sidebar = ({ selectedDate, onDateSelect, onCreateTask, showDeletedTasks, o
         />
         <div className="mt-2 text-xs text-gray-500">
           {format(selectedDate, 'EEEE, MMMM do, yyyy')}
+          {isTodaySelected && (
+            <span className="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800">
+              Today
+            </span>
+          )}
         </div>
       </div>
     </div>

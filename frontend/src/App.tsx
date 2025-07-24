@@ -15,15 +15,26 @@ function App() {
   const [showTaskForm, setShowTaskForm] = useState(false);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
   const [showDeletedTasks, setShowDeletedTasks] = useState(true);
+  const [dateFilterEnabled, setDateFilterEnabled] = useState(false);
 
   useEffect(() => {
     loadTasks();
-  }, [showDeletedTasks]);
+  }, [showDeletedTasks, selectedDate, dateFilterEnabled]);
 
   const loadTasks = async () => {
     try {
       setLoading(true);
-      const tasksData = await TaskAPI.getAllTasks(undefined, undefined, undefined, showDeletedTasks);
+      let tasksData: Task[];
+      
+      if (dateFilterEnabled) {
+        // Use backend date filtering for selected date
+        const dateString = format(selectedDate, 'yyyy-MM-dd');
+        tasksData = await TaskAPI.getTasksByDate(dateString, showDeletedTasks);
+      } else {
+        // Load all tasks (for calendar view)
+        tasksData = await TaskAPI.getAllTasks(undefined, undefined, undefined, showDeletedTasks);
+      }
+      
       setTasks(tasksData);
     } catch (error) {
       console.error('Failed to load tasks:', error);
@@ -89,6 +100,17 @@ function App() {
     }
   };
 
+  const handleDateSelect = (date: Date) => {
+    setSelectedDate(date);
+    // Enable date filtering when a specific date is selected
+    setDateFilterEnabled(true);
+  };
+
+  const handleViewAllTasks = () => {
+    // Disable date filtering to show all tasks (for calendar view)
+    setDateFilterEnabled(false);
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -102,10 +124,12 @@ function App() {
       <div className="flex h-screen bg-gray-50">
         <Sidebar 
           selectedDate={selectedDate}
-          onDateSelect={setSelectedDate}
+          onDateSelect={handleDateSelect}
           onCreateTask={handleCreateTask}
           showDeletedTasks={showDeletedTasks}
           onToggleDeletedTasks={setShowDeletedTasks}
+          dateFilterEnabled={dateFilterEnabled}
+          onViewAllTasks={handleViewAllTasks}
         />
         
         <main className="flex-1 flex flex-col overflow-hidden">
@@ -121,6 +145,7 @@ function App() {
                   onPermanentDeleteTask={handlePermanentDeleteTask}
                   onStatusChange={handleStatusChange}
                   selectedDate={selectedDate}
+                  dateFilterEnabled={dateFilterEnabled}
                 />
               } 
             />
@@ -132,7 +157,8 @@ function App() {
                   onEditTask={handleEditTask}
                   onSoftDeleteTask={handleSoftDeleteTask}
                   onPermanentDeleteTask={handlePermanentDeleteTask}
-                  onSelectDate={setSelectedDate}
+                  onSelectDate={handleDateSelect}
+                  onViewAllTasks={handleViewAllTasks}
                 />
               } 
             />

@@ -1,0 +1,84 @@
+services:
+  # CouchDB Database
+  couchdb:
+    image: couchdb:3.3.2
+    container_name: todo-couchdb
+    environment:
+      - COUCHDB_USER=admin
+      - COUCHDB_PASSWORD=password
+      - COUCHDB_SINGLE_NODE=true
+    ports:
+      - "5985:5984"
+    volumes:
+      - couchdb_data:/opt/couchdb/data
+      - couchdb_config:/opt/couchdb/etc
+    networks:
+      - todo-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5984/_up"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Backend API
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: todo-backend
+    environment:
+      - COUCHDB_USERNAME=admin
+      - COUCHDB_PASSWORD=password
+      - COUCHDB_HOST=couchdb
+      - COUCHDB_PORT=5984
+      - COUCHDB_DATABASE=todo_tasks
+      - COUCHDB_MAX_RETRIES=5
+      - COUCHDB_RETRY_DELAY=2.0
+      - COUCHDB_CONNECTION_TIMEOUT=10
+      - PYTHONPATH=/app
+    ports:
+      - "7035:7035"
+    volumes:
+      - ./backend:/app
+      - /app/__pycache__
+    depends_on:
+      couchdb:
+        condition: service_healthy
+    networks:
+      - todo-network
+    restart: unless-stopped
+
+  # Frontend Application
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: todo-frontend
+    environment:
+      - VITE_API_BASE_URL=http://localhost:7035
+      - VITE_FRONTEND_PORT=7038
+      - VITE_ENVIRONMENT=development
+      - VITE_DEBUG=true
+    ports:
+      - "7038:7038"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    depends_on:
+      - backend
+    networks:
+      - todo-network
+    restart: unless-stopped
+
+# Named volumes for persistent data
+volumes:
+  couchdb_data:
+    driver: local
+  couchdb_config:
+    driver: local
+
+# Custom network for service communication
+networks:
+  todo-network:
+    driver: bridge 
