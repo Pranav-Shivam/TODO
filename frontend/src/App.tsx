@@ -113,15 +113,18 @@ function App() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-lg text-gray-600">Loading...</div>
+      <div className="min-h-screen flex items-center justify-center p-4">
+        <div className="text-base lg:text-lg text-gray-600 flex items-center gap-2">
+          <div className="w-5 h-5 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+          Loading...
+        </div>
       </div>
     );
   }
 
   return (
     <Router>
-      <div className="flex h-screen bg-gray-50">
+      <div className="flex flex-col lg:flex-row min-h-screen bg-gray-50">
         <Sidebar 
           selectedDate={selectedDate}
           onDateSelect={handleDateSelect}
@@ -166,15 +169,19 @@ function App() {
         </main>
 
         {showTaskForm && (
-          <TaskForm
-            task={editingTask}
-            onSubmit={handleTaskSubmit}
-            onCancel={() => {
-              setShowTaskForm(false);
-              setEditingTask(null);
-            }}
-            defaultDate={format(selectedDate, 'yyyy-MM-dd')}
-          />
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-lg shadow-xl w-full max-w-lg mx-auto max-h-[90vh] overflow-y-auto">
+              <TaskForm
+                task={editingTask}
+                onSubmit={handleTaskSubmit}
+                onCancel={() => {
+                  setShowTaskForm(false);
+                  setEditingTask(null);
+                }}
+                defaultDate={format(selectedDate, 'yyyy-MM-dd')}
+              />
+            </div>
+          </div>
         )}
       </div>
     </Router>

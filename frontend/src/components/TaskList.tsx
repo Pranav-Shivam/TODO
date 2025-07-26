@@ -21,8 +21,8 @@ interface DeleteConfirmationProps {
 }
 
 const DeleteConfirmation = ({ task, onSoftDelete, onPermanentDelete, onCancel }: DeleteConfirmationProps) => (
-  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-    <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4 shadow-xl">
+  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+    <div className="bg-white rounded-lg p-4 lg:p-6 max-w-md w-full mx-auto shadow-xl">
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-lg font-semibold text-gray-900">Delete Task</h3>
         <button
@@ -37,7 +37,7 @@ const DeleteConfirmation = ({ task, onSoftDelete, onPermanentDelete, onCancel }:
         <p className="text-gray-700 mb-2">
           What would you like to do with this task?
         </p>
-        <div className="bg-gray-50 p-3 rounded-lg">
+        <div className="bg-gray-50 p-3 rounded-lg break-words">
           <p className="font-medium text-gray-900">#{task.serial_number} - {task.description}</p>
           {task.comment && (
             <p className="text-sm text-gray-600 mt-1">{task.comment}</p>
@@ -48,7 +48,7 @@ const DeleteConfirmation = ({ task, onSoftDelete, onPermanentDelete, onCancel }:
       <div className="space-y-3">
         <button
           onClick={onSoftDelete}
-          className="w-full px-4 py-3 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors flex items-center justify-center gap-2"
+          className="w-full px-4 py-3 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors flex items-center justify-center gap-2 text-sm lg:text-base"
         >
           <Trash2 className="w-4 h-4" />
           Soft Delete (Can be recovered)
@@ -56,7 +56,7 @@ const DeleteConfirmation = ({ task, onSoftDelete, onPermanentDelete, onCancel }:
         
         <button
           onClick={onPermanentDelete}
-          className="w-full px-4 py-3 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors flex items-center justify-center gap-2"
+          className="w-full px-4 py-3 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors flex items-center justify-center gap-2 text-sm lg:text-base"
         >
           <AlertTriangle className="w-4 h-4" />
           Permanently Delete (Cannot be undone)
@@ -64,7 +64,7 @@ const DeleteConfirmation = ({ task, onSoftDelete, onPermanentDelete, onCancel }:
         
         <button
           onClick={onCancel}
-          className="w-full px-4 py-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+          className="w-full px-4 py-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors text-sm lg:text-base"
         >
           Cancel
         </button>
@@ -168,18 +168,18 @@ const TaskList = ({
 
   return (
     <>
-      <div className="flex-1 p-6">
+      <div className="flex-1 p-4 lg:p-6 overflow-auto">
         <div className="max-w-4xl mx-auto">
-          <div className="mb-6">
-            <div className="flex items-center justify-between">
+          <div className="mb-4 lg:mb-6">
+            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-2">
               <div>
-                <h2 className="text-2xl font-bold text-gray-900">
+                <h2 className="text-xl lg:text-2xl font-bold text-gray-900 break-words">
                   {dateFilterEnabled 
                     ? `Tasks for ${format(selectedDate, 'MMMM d, yyyy')}`
                     : `All Tasks (${format(selectedDate, 'MMMM d, yyyy')})`
                   }
                 </h2>
-                <p className="text-gray-600 mt-1">
+                <p className="text-sm lg:text-base text-gray-600 mt-1">
                   {filteredTasks.length} task{filteredTasks.length !== 1 ? 's' : ''} found
                   {dateFilterEnabled && (
                     <span className="ml-2 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
@@ -196,12 +196,12 @@ const TaskList = ({
             {filteredTasks.map((task) => (
               <div
                 key={task.id}
-                className={`bg-white rounded-lg border p-4 hover:shadow-md transition-shadow ${
+                className={`bg-white rounded-lg border p-3 lg:p-4 hover:shadow-md transition-shadow ${
                   task.is_deleted ? 'opacity-60 bg-gray-50' : ''
                 } ${getStatusColor(task.status)}`}
               >
-                <div className="flex items-start justify-between">
-                  <div className="flex items-start space-x-3 flex-1">
+                <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-3 lg:gap-4">
+                  <div className="flex items-start space-x-3 flex-1 min-w-0">
                     <button
                       onClick={() => handleStatusClick(task)}
                       className="mt-1 hover:scale-110 transition-transform"
@@ -211,14 +211,14 @@ const TaskList = ({
                     </button>
 
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-1">
-                        <h3 className={`font-medium text-gray-900 ${
+                      <div className="flex flex-wrap items-center gap-2 mb-1">
+                        <h3 className={`font-medium text-gray-900 break-words ${
                           task.is_deleted ? 'line-through text-gray-500' : ''
                         }`}>
                           #{task.serial_number} - {task.description}
                         </h3>
                         {task.is_deleted && (
-                          <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                          <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 whitespace-nowrap">
                             <AlertTriangle className="w-3 h-3 mr-1" />
                             Deleted
                           </span>
@@ -226,15 +226,15 @@ const TaskList = ({
                       </div>
                       
                       {task.comment && (
-                        <p className={`text-sm text-gray-600 mb-2 ${
+                        <p className={`text-sm text-gray-600 mb-2 break-words ${
                           task.is_deleted ? 'line-through' : ''
                         }`}>
                           {task.comment}
                         </p>
                       )}
 
-                      <div className="flex items-center space-x-4 text-xs text-gray-500">
-                        <span className={`inline-flex items-center px-2 py-1 rounded-full font-medium ${
+                      <div className="flex flex-wrap items-center gap-2 text-xs text-gray-500">
+                        <span className={`inline-flex items-center px-2 py-1 rounded-full font-medium whitespace-nowrap ${
                           task.status === TaskStatus.COMPLETED
                             ? 'bg-green-100 text-green-800'
                             : task.status === TaskStatus.IN_PROGRESS
@@ -245,15 +245,15 @@ const TaskList = ({
                         </span>
                         
                         {task.due_date && (
-                          <span>Due: {format(parseISO(task.due_date), 'MMM d, yyyy')}</span>
+                          <span className="whitespace-nowrap">Due: {format(parseISO(task.due_date), 'MMM d, yyyy')}</span>
                         )}
                         
-                        <span>Created: {format(parseISO(task.created_date), 'MMM d, yyyy')}</span>
+                        <span className="whitespace-nowrap">Created: {format(parseISO(task.created_date), 'MMM d, yyyy')}</span>
                       </div>
                     </div>
                   </div>
 
-                  <div className="flex items-center space-x-2 ml-4">
+                  <div className="flex items-center gap-2 lg:ml-4 justify-end lg:justify-start">
                     <button
                       onClick={() => onEditTask(task)}
                       className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
