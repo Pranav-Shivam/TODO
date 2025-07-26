@@ -13,7 +13,8 @@ RUN npm install --legacy-peer-deps
 
 # Copy source code
 COPY . .
-RUN npm run build
+
+# Expose port
 EXPOSE 7038
 
 # Start development server
