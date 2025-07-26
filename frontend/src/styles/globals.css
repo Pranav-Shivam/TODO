@@ -1,0 +1,554 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+ 
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+ 
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+ 
+    --primary: 221.2 83.2% 53.3%;
+    --primary-foreground: 210 40% 98%;
+ 
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+ 
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+ 
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+ 
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 221.2 83.2% 53.3%;
+ 
+    --radius: 0.5rem;
+  }
+ 
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+ 
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+ 
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+ 
+    --primary: 210 40% 98%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+ 
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+ 
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+ 
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+ 
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+ 
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 212.7 26.8% 83.9%;
+  }
+}
+ 
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+/* Custom Calendar Styles */
+.rbc-calendar {
+  @apply font-sans;
+}
+
+.rbc-toolbar {
+  @apply flex-wrap gap-2 mb-4;
+}
+
+.rbc-toolbar button {
+  @apply px-3 py-1.5 text-sm font-medium rounded-md border border-gray-300 
+         bg-white text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 
+         focus:ring-offset-2 focus:ring-blue-500 transition-colors;
+}
+
+.dark .rbc-toolbar button {
+  @apply border-gray-600 bg-gray-800 text-gray-200 hover:bg-gray-700 
+         focus:ring-blue-400;
+}
+
+.rbc-toolbar button.rbc-active {
+  @apply bg-blue-50 text-blue-700 border-blue-200;
+}
+
+.dark .rbc-toolbar button.rbc-active {
+  @apply bg-blue-900 text-blue-200 border-blue-700;
+}
+
+.rbc-month-view {
+  @apply rounded-lg border border-gray-200 overflow-hidden;
+}
+
+.dark .rbc-month-view {
+  @apply border-gray-700;
+}
+
+.rbc-header {
+  @apply py-2 font-semibold text-sm text-gray-900 bg-gray-50 border-b border-gray-200;
+}
+
+.dark .rbc-header {
+  @apply text-gray-100 bg-gray-800 border-gray-700;
+}
+
+.rbc-month-row {
+  @apply border-gray-200;
+}
+
+.dark .rbc-month-row {
+  @apply border-gray-700;
+}
+
+.rbc-date-cell {
+  @apply p-1 text-right text-sm;
+}
+
+.dark .rbc-date-cell {
+  @apply text-gray-300;
+}
+
+.rbc-today {
+  @apply bg-blue-50;
+}
+
+.dark .rbc-today {
+  @apply bg-blue-900;
+}
+
+.rbc-event {
+  @apply rounded-md shadow-sm border-none;
+}
+
+.rbc-event-content {
+  @apply text-sm font-medium;
+}
+
+.rbc-show-more {
+  @apply text-xs text-blue-600 hover:text-blue-800 hover:underline;
+}
+
+.dark .rbc-show-more {
+  @apply text-blue-400 hover:text-blue-300;
+}
+
+/* Enhanced Date and Time Input Styles */
+input[type="date"],
+input[type="time"] {
+  @apply w-full px-3 py-2 text-sm border border-gray-300 rounded-md 
+         focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 
+         transition duration-200 ease-in-out bg-white text-gray-900;
+}
+
+.dark input[type="date"],
+.dark input[type="time"] {
+  @apply border-gray-600 bg-gray-800 text-gray-100 
+         focus:ring-blue-400 focus:border-blue-400;
+}
+
+/* Date input calendar icon styling */
+input[type="date"]::-webkit-calendar-picker-indicator {
+  @apply filter invert-0 opacity-60 hover:opacity-100 transition-opacity;
+}
+
+.dark input[type="date"]::-webkit-calendar-picker-indicator {
+  @apply filter invert opacity-60 hover:opacity-100;
+}
+
+/* Time input clock icon styling */
+input[type="time"]::-webkit-calendar-picker-indicator {
+  @apply filter invert-0 opacity-60 hover:opacity-100 transition-opacity;
+}
+
+.dark input[type="time"]::-webkit-calendar-picker-indicator {
+  @apply filter invert opacity-60 hover:opacity-100;
+}
+
+/* Task Status Colors */
+.status-not-started {
+  @apply bg-gray-500 text-white;
+}
+
+.status-in-progress {
+  @apply bg-yellow-500 text-white;
+}
+
+.status-completed {
+  @apply bg-green-500 text-white;
+}
+
+/* Custom Scrollbar */
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: theme('colors.gray.300') theme('colors.gray.100');
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  @apply bg-gray-100 rounded-full;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  @apply bg-gray-300 rounded-full hover:bg-gray-400 transition-colors;
+}
+
+.dark .custom-scrollbar {
+  scrollbar-color: theme('colors.gray.600') theme('colors.gray.800');
+}
+
+.dark .custom-scrollbar::-webkit-scrollbar-track {
+  @apply bg-gray-800;
+}
+
+.dark .custom-scrollbar::-webkit-scrollbar-thumb {
+  @apply bg-gray-600 hover:bg-gray-500;
+}
+
+/* Animations */
+.fade-enter {
+  opacity: 0;
+}
+
+.fade-enter-active {
+  opacity: 1;
+  transition: opacity 200ms ease-in;
+}
+
+.fade-exit {
+  opacity: 1;
+}
+
+.fade-exit-active {
+  opacity: 0;
+  transition: opacity 200ms ease-in;
+}
+
+/* Enhanced Form Elements */
+.form-input {
+  @apply w-full px-3 py-2 text-sm border border-gray-300 rounded-md 
+         focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 
+         transition duration-200 ease-in-out bg-white text-gray-900;
+}
+
+.dark .form-input {
+  @apply border-gray-600 bg-gray-800 text-gray-100 
+         focus:ring-blue-400 focus:border-blue-400;
+}
+
+.form-select {
+  @apply w-full px-3 py-2 text-sm border border-gray-300 rounded-md 
+         focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 
+         transition duration-200 ease-in-out bg-white text-gray-900;
+}
+
+.dark .form-select {
+  @apply border-gray-600 bg-gray-800 text-gray-100 
+         focus:ring-blue-400 focus:border-blue-400;
+}
+
+.form-textarea {
+  @apply w-full px-3 py-2 text-sm border border-gray-300 rounded-md 
+         focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 
+         transition duration-200 ease-in-out resize-none bg-white text-gray-900;
+}
+
+.dark .form-textarea {
+  @apply border-gray-600 bg-gray-800 text-gray-100 
+         focus:ring-blue-400 focus:border-blue-400;
+}
+
+/* Enhanced Buttons */
+.btn {
+  @apply inline-flex items-center justify-center px-4 py-2 text-sm font-medium 
+         rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 
+         transition duration-200 ease-in-out;
+}
+
+.btn-primary {
+  @apply btn bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500;
+}
+
+.btn-secondary {
+  @apply btn bg-white text-gray-700 border border-gray-300 
+         hover:bg-gray-50 focus:ring-blue-500;
+}
+
+.dark .btn-secondary {
+  @apply bg-gray-800 text-gray-200 border-gray-600 
+         hover:bg-gray-700 focus:ring-blue-400;
+}
+
+.dark .btn-secondary:hover {
+  @apply bg-gray-700 border-gray-500;
+}
+
+.dark .btn-secondary:focus {
+  @apply ring-2 ring-blue-400 ring-offset-2 ring-offset-gray-800;
+}
+
+.btn-danger {
+  @apply btn bg-red-600 text-white hover:bg-red-700 focus:ring-red-500;
+}
+
+.btn-warning {
+  @apply btn bg-yellow-500 text-white hover:bg-yellow-600 focus:ring-yellow-500;
+}
+
+.btn-success {
+  @apply btn bg-green-600 text-white hover:bg-green-700 focus:ring-green-500;
+}
+
+/* Enhanced Cards */
+.card {
+  @apply bg-white rounded-lg border border-gray-200 overflow-hidden shadow-sm 
+         transition duration-200 ease-in-out hover:shadow-md;
+}
+
+.dark .card {
+  @apply bg-gray-800 border-gray-700 hover:shadow-lg;
+}
+
+.card-header {
+  @apply px-4 py-3 border-b border-gray-200 bg-gray-50;
+}
+
+.dark .card-header {
+  @apply border-gray-700 bg-gray-900;
+}
+
+.card-body {
+  @apply p-4;
+}
+
+.card-footer {
+  @apply px-4 py-3 border-t border-gray-200 bg-gray-50;
+}
+
+.dark .card-footer {
+  @apply border-gray-700 bg-gray-900;
+}
+
+/* Enhanced Badges */
+.badge {
+  @apply inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium;
+}
+
+.badge-primary {
+  @apply badge bg-blue-100 text-blue-800;
+}
+
+.dark .badge-primary {
+  @apply bg-blue-900 text-blue-200;
+}
+
+.badge-success {
+  @apply badge bg-green-100 text-green-800;
+}
+
+.dark .badge-success {
+  @apply bg-green-900 text-green-200;
+}
+
+.badge-warning {
+  @apply badge bg-yellow-100 text-yellow-800;
+}
+
+.dark .badge-warning {
+  @apply bg-yellow-900 text-yellow-200;
+}
+
+.badge-danger {
+  @apply badge bg-red-100 text-red-800;
+}
+
+.dark .badge-danger {
+  @apply bg-red-900 text-red-200;
+}
+
+/* Tooltips */
+.tooltip {
+  @apply absolute z-10 px-2 py-1 text-xs font-medium text-white bg-gray-900 
+         rounded shadow-sm invisible opacity-0 transition-all duration-200 
+         group-hover:visible group-hover:opacity-100;
+}
+
+/* Loading Spinner */
+.spinner {
+  @apply animate-spin rounded-full border-2 border-gray-300;
+}
+
+.spinner-primary {
+  @apply spinner border-t-blue-600;
+}
+
+.spinner-light {
+  @apply spinner border-t-white;
+}
+
+/* Additional Dark Mode Enhancements */
+.dark .rbc-time-view {
+  @apply border-gray-700;
+}
+
+.dark .rbc-time-header {
+  @apply border-gray-700;
+}
+
+.dark .rbc-time-content {
+  @apply border-gray-700;
+}
+
+.dark .rbc-time-gutter {
+  @apply bg-gray-800 text-gray-300;
+}
+
+.dark .rbc-time-slot {
+  @apply border-gray-700;
+}
+
+.dark .rbc-current-time-indicator {
+  @apply bg-red-500;
+}
+
+.dark .rbc-off-range-bg {
+  @apply bg-gray-900;
+}
+
+.dark .rbc-off-range {
+  @apply text-gray-600;
+}
+
+/* Enhanced react-big-calendar dark mode support */
+.dark .rbc-calendar {
+  @apply bg-gray-800 text-gray-100;
+}
+
+.dark .rbc-toolbar {
+  @apply bg-gray-800;
+}
+
+.dark .rbc-toolbar button {
+  @apply bg-gray-700 text-gray-200 border-gray-600 hover:bg-gray-600 focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 focus:ring-offset-gray-800;
+}
+
+.dark .rbc-toolbar button.rbc-active {
+  @apply bg-blue-900 text-blue-200 border-blue-700;
+}
+
+.dark .rbc-toolbar button:hover {
+  @apply bg-gray-600 border-gray-500;
+}
+
+.dark .rbc-toolbar button:focus {
+  @apply outline-none ring-2 ring-blue-400 ring-offset-2 ring-offset-gray-800;
+}
+
+.dark .rbc-month-view,
+.dark .rbc-time-view,
+.dark .rbc-agenda-view {
+  @apply bg-gray-800 border-gray-700;
+}
+
+.dark .rbc-header {
+  @apply bg-gray-900 text-gray-100 border-gray-700;
+}
+
+.dark .rbc-month-row {
+  @apply border-gray-700;
+}
+
+.dark .rbc-date-cell {
+  @apply text-gray-300;
+}
+
+.dark .rbc-day-bg {
+  @apply bg-gray-800;
+}
+
+.dark .rbc-today {
+  @apply bg-blue-900;
+}
+
+.dark .rbc-day-bg:hover {
+  @apply bg-gray-700;
+}
+
+.dark .rbc-today:hover {
+  @apply bg-blue-800;
+}
+
+.dark .rbc-off-range-bg {
+  @apply bg-gray-900;
+}
+
+.dark .rbc-off-range {
+  @apply text-gray-600;
+}
+
+.dark .rbc-event {
+  @apply bg-blue-600 text-white;
+}
+
+.dark .rbc-event.rbc-selected {
+  @apply bg-blue-700;
+}
+
+.dark .rbc-show-more {
+  @apply text-blue-400 hover:text-blue-300;
+}
+
+.dark .rbc-popover {
+  @apply bg-gray-800 border-gray-700 text-gray-100;
+}
+
+.dark .rbc-popover-header {
+  @apply bg-gray-900 border-gray-700;
+}
+
+.dark .rbc-popover-content {
+  @apply bg-gray-800;
+}
+
+/* Enhanced focus states for better accessibility */
+.dark input:focus,
+.dark select:focus,
+.dark textarea:focus {
+  @apply ring-2 ring-blue-400 ring-offset-2 ring-offset-gray-800;
+}
+
+/* Better contrast for disabled states */
+.dark input:disabled,
+.dark select:disabled,
+.dark textarea:disabled {
+  @apply bg-gray-900 text-gray-500 cursor-not-allowed;
+} 

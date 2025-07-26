@@ -1,11 +1,11 @@
 import couchdb
 import uuid
 import os
-import time
+import time as time_module
 import logging
-from datetime import datetime, date
+from datetime import datetime, date, time
 from typing import List, Optional, Dict, Any
-from models.task import Task, TaskCreate, TaskUpdate, TaskStatus
+from models.task import Task, TaskCreate, TaskUpdate, TaskStatus, TaskPriority
 from dotenv import load_dotenv
 
 # Load environment variables
@@ -56,7 +56,7 @@ class CouchDBClient:
                 
                 if attempt < max_retries - 1:
                     logger.info(f"Retrying in {delay} seconds...")
-                    time.sleep(delay)
+                    time_module.sleep(delay)
                     # Exponential backoff for subsequent attempts
                     delay = min(delay * 1.5, 30.0)
         
@@ -157,25 +157,35 @@ class CouchDBClient:
             "_id": "_design/tasks",
             "views": {
                 "by_serial_number": {
-                    "map": "function(doc) { if (doc.serial_number) emit(doc.serial_number, doc); }"
+                    "map": "function(doc) { if (doc.serial_number && doc.type === 'task') emit(doc.serial_number, doc); }"
                 },
                 "by_date": {
-                    "map": "function(doc) { if (doc.due_date) emit(doc.due_date, doc); }"
+                    "map": "function(doc) { if (doc.due_date && doc.type === 'task') emit(doc.due_date, doc); }"
                 },
                 "by_status": {
-                    "map": "function(doc) { if (doc.status) emit(doc.status, doc); }"
+                    "map": "function(doc) { if (doc.status && doc.type === 'task') emit(doc.status, doc); }"
+                },
+                "by_priority": {
+                    "map": "function(doc) { if (doc.priority && doc.type === 'task') emit(doc.priority, doc); }"
+                },
+                "by_status_and_priority": {
+                    "map": "function(doc) { if (doc.status && doc.priority && doc.type === 'task') emit([doc.status, doc.priority], doc); }"
                 },
                 "by_created_date": {
-                    "map": "function(doc) { if (doc.created_date) emit(doc.created_date, doc); }"
+                    "map": "function(doc) { if (doc.created_date && doc.type === 'task') emit(doc.created_date, doc); }"
                 }
             }
         }
         
         try:
             self.db.save(views)
+            logger.info("Successfully created CouchDB views")
         except couchdb.ResourceConflict:
             # View already exists
-            pass
+            logger.debug("CouchDB views already exist")
+        except Exception as e:
+            logger.error(f"Failed to create CouchDB views: {e}")
+            raise
 
     def _day_range(self, target: datetime) -> tuple[str, str]:
         """Return ISO start / end keys for the day of *target*."""
@@ -223,7 +233,11 @@ class CouchDBClient:
             "description": task_data.description,
             "comment": task_data.comment,
             "status": task_data.status.value,
+            "priority": task_data.priority.value,
             "due_date": task_data.due_date.isoformat() if task_data.due_date else None,
+            "start_time": task_data.start_time.isoformat() if task_data.start_time else None,
+            "end_time": task_data.end_time.isoformat() if task_data.end_time else None,
+            "custom_color": task_data.custom_color,
             "created_date": task_data.created_date.isoformat(),
             "modified_date": datetime.now().isoformat(),
             "is_deleted": task_data.is_deleted,
@@ -281,6 +295,30 @@ class CouchDBClient:
                 tasks.append(task)
         return tasks
 
+    def get_tasks_by_priority(self, priority: TaskPriority, include_deleted: bool = False) -> List[Task]:
+        """Get tasks by priority"""
+        self._ensure_initialized()
+        tasks = []
+        for row in self.db.view('tasks/by_priority', key=priority.value):
+            doc = self.db[row.id]
+            task = self._doc_to_task(doc)
+            # Filter out deleted tasks unless explicitly requested
+            if include_deleted or not task.is_deleted:
+                tasks.append(task)
+        return tasks
+
+    def get_tasks_by_status_and_priority(self, status: TaskStatus, priority: TaskPriority, include_deleted: bool = False) -> List[Task]:
+        """Get tasks by status and priority"""
+        self._ensure_initialized()
+        tasks = []
+        for row in self.db.view('tasks/by_status_and_priority', key=[status.value, priority.value]):
+            doc = self.db[row.id]
+            task = self._doc_to_task(doc)
+            # Filter out deleted tasks unless explicitly requested
+            if include_deleted or not task.is_deleted:
+                tasks.append(task)
+        return tasks
+
     def update_task(self, task_id: str, task_update: TaskUpdate) -> Optional[Task]:
         """Update a task"""
         self._ensure_initialized()
@@ -294,8 +332,16 @@ class CouchDBClient:
                 doc["comment"] = task_update.comment
             if task_update.status is not None:
                 doc["status"] = task_update.status.value
+            if task_update.priority is not None:
+                doc["priority"] = task_update.priority.value
             if task_update.due_date is not None:
                 doc["due_date"] = task_update.due_date.isoformat()
+            if task_update.start_time is not None:
+                doc["start_time"] = task_update.start_time.isoformat()
+            if task_update.end_time is not None:
+                doc["end_time"] = task_update.end_time.isoformat()
+            if task_update.custom_color is not None:
+                doc["custom_color"] = task_update.custom_color
             if task_update.is_deleted is not None:
                 doc["is_deleted"] = task_update.is_deleted
             
@@ -338,17 +384,26 @@ class CouchDBClient:
 
     def _doc_to_task(self, doc: Dict[str, Any]) -> Task:
         """Convert CouchDB document to Task model"""
-        return Task(
-            id=doc["_id"],
-            serial_number=doc["serial_number"],
-            description=doc["description"],
-            comment=doc.get("comment"),
-            status=TaskStatus(doc["status"]),
-            due_date=datetime.fromisoformat(doc["due_date"]) if doc.get("due_date") else None,
-            created_date=datetime.fromisoformat(doc["created_date"]),
-            modified_date=datetime.fromisoformat(doc["modified_date"]),
-            is_deleted=doc.get("is_deleted", False)
-        )
+        try:
+            return Task(
+                id=doc["_id"],
+                serial_number=doc["serial_number"],
+                description=doc["description"],
+                comment=doc.get("comment"),
+                status=TaskStatus(doc["status"]),
+                priority=TaskPriority(doc.get("priority", TaskPriority.MEDIUM.value)),
+                due_date=datetime.fromisoformat(doc["due_date"]) if doc.get("due_date") else None,
+                start_time=time.fromisoformat(doc["start_time"]) if doc.get("start_time") else None,
+                end_time=time.fromisoformat(doc["end_time"]) if doc.get("end_time") else None,
+                custom_color=doc.get("custom_color"),
+                created_date=datetime.fromisoformat(doc["created_date"]),
+                modified_date=datetime.fromisoformat(doc["modified_date"]),
+                is_deleted=doc.get("is_deleted", False)
+            )
+        except Exception as e:
+            logger.error(f"Error converting document to task: {e}")
+            logger.error(f"Document data: {doc}")
+            raise ValueError(f"Invalid task document format: {e}")
 
 # Global database instance - will be lazily initialized
 _db_client_instance = None
